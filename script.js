@@ -1,108 +1,80 @@
-// Array to store bookings
-let bookings = [];
+document.addEventListener("DOMContentLoaded", () => {
+  const calendarEl = document.getElementById("calendar");
+  const bookingForm = document.getElementById("bookingForm");
+  const formTitle = document.getElementById("formTitle");
+  const nameInput = document.getElementById("name");
+  const contactInput = document.getElementById("contact");
+  const locationInput = document.getElementById("location");
+  const checkinInput = document.getElementById("checkin");
+  const checkoutInput = document.getElementById("checkout");
+  let editingEvent = null;
 
-// Elements
-const addBookingBtn = document.getElementById("addBookingBtn");
-const editBookingBtn = document.getElementById("editBookingBtn");
-const deleteBookingBtn = document.getElementById("deleteBookingBtn");
-const bookingsTable = document.getElementById("bookings-list");
-const bookingForm = document.getElementById("bookingForm");
-const formTitle = document.getElementById("formTitle");
-
-// Form fields
-const nameInput = document.getElementById("name");
-const contactInput = document.getElementById("contact");
-const locationInput = document.getElementById("location");
-const checkinInput = document.getElementById("checkin");
-const checkoutInput = document.getElementById("checkout");
-
-let editingIndex = null; // Track which booking is being edited
-
-// Function to render bookings in the table
-function renderBookings() {
-  bookingsTable.innerHTML = ""; // Clear existing rows
-  bookings.forEach((booking, index) => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${booking.name}</td>
-      <td>${booking.contact}</td>
-      <td>${booking.location}</td>
-      <td>${booking.checkin}</td>
-      <td>${booking.checkout}</td>
-    `;
-    row.onclick = () => selectBooking(index); // Select booking for editing/deletion
-    bookingsTable.appendChild(row);
+  // Initialize the calendar
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: "dayGridMonth",
+    editable: true,
+    selectable: true,
+    events: [],
+    eventClick: function (info) {
+      // Populate the form with event details
+      editingEvent = info.event;
+      nameInput.value = info.event.title;
+      contactInput.value = info.event.extendedProps.contact;
+      locationInput.value = info.event.extendedProps.location;
+      checkinInput.value = info.event.startStr;
+      checkoutInput.value = info.event.endStr.slice(0, 10); // Remove timestamp
+      bookingForm.style.display = "block";
+      formTitle.textContent = "Edit Booking";
+    },
   });
-}
 
-// Function to handle adding or editing a booking
-function saveBooking(event) {
-  event.preventDefault();
-  const booking = {
-    name: nameInput.value,
-    contact: contactInput.value,
-    location: locationInput.value,
-    checkin: checkinInput.value,
-    checkout: checkoutInput.value,
-  };
+  calendar.render();
 
-  if (editingIndex !== null) {
-    // Update existing booking
-    bookings[editingIndex] = booking;
-    editingIndex = null; // Reset editing state
+  // Add booking
+  document.getElementById("addBookingBtn").addEventListener("click", () => {
+    bookingForm.style.display = "block";
     formTitle.textContent = "Add Booking";
-  } else {
-    // Add new booking
-    bookings.push(booking);
-  }
+    bookingForm.reset();
+    editingEvent = null; // Clear editing state
+  });
 
-  bookingForm.reset(); // Clear form
-  bookingForm.style.display = "none"; // Hide form
-  renderBookings(); // Update table
-}
+  // Save booking
+  bookingForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const newEvent = {
+      title: nameInput.value,
+      start: checkinInput.value,
+      end: new Date(checkoutInput.value).toISOString(), // Add time offset
+      extendedProps: {
+        contact: contactInput.value,
+        location: locationInput.value,
+      },
+    };
 
-// Function to handle selecting a booking for editing or deletion
-function selectBooking(index) {
-  editingIndex = index;
-  const booking = bookings[index];
-  nameInput.value = booking.name;
-  contactInput.value = booking.contact;
-  locationInput.value = booking.location;
-  checkinInput.value = booking.checkin;
-  checkoutInput.value = booking.checkout;
-  bookingForm.style.display = "block"; // Show form
-  formTitle.textContent = "Edit Booking";
-}
+    if (editingEvent) {
+      // Update existing event
+      editingEvent.setProp("title", newEvent.title);
+      editingEvent.setStart(newEvent.start);
+      editingEvent.setEnd(newEvent.end);
+      editingEvent.setExtendedProp("contact", newEvent.extendedProps.contact);
+      editingEvent.setExtendedProp("location", newEvent.extendedProps.location);
+    } else {
+      // Add new event
+      calendar.addEvent(newEvent);
+    }
 
-// Function to delete selected booking
-function deleteBooking() {
-  if (editingIndex !== null) {
-    bookings.splice(editingIndex, 1); // Remove selected booking
-    editingIndex = null; // Reset editing state
-    bookingForm.reset(); // Clear form
-    bookingForm.style.display = "none"; // Hide form
-    renderBookings(); // Update table
-  } else {
-    alert("Please select a booking to delete.");
-  }
-}
+    bookingForm.reset();
+    bookingForm.style.display = "none";
+  });
 
-// Event listeners
-addBookingBtn.addEventListener("click", () => {
-  editingIndex = null; // Clear editing state
-  bookingForm.reset(); // Clear form
-  bookingForm.style.display = "block"; // Show form
-  formTitle.textContent = "Add Booking";
+  // Delete booking
+  document.getElementById("deleteBookingBtn").addEventListener("click", () => {
+    if (editingEvent) {
+      editingEvent.remove();
+      bookingForm.reset();
+      bookingForm.style.display = "none";
+    } else {
+      alert("Please select a booking to delete.");
+    }
+  });
 });
-
-editBookingBtn.addEventListener("click", () => {
-  if (editingIndex === null) {
-    alert("Please select a booking to edit.");
-  }
-});
-
-deleteBookingBtn.addEventListener("click", deleteBooking);
-bookingForm.addEventListener("submit", saveBooking);
-
-// Initial render
-renderBookings();
