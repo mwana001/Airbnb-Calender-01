@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Airbnb Calendar</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    #calendar {
+      max-width: 900px;
+      margin: 50px auto;
+    }
+    #form-container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 10px;
+      background: #f8f8f8;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    input, select, button {
+      margin: 10px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+    }
+    button {
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div id="form-container">
+    <h2>Add Booking</h2>
+    <form id="bookingForm">
+      <label for="location">Location:</label>
+      <select id="location" required>
+        <option value="" disabled selected>Select a location</option>
+        <optgroup label="Kwale">
+          <option value="Kwale, Diani">Diani</option>
+          <option value="Kwale, Ukunda">Ukunda</option>
+          <option value="Kwale, Msambweni">Msambweni</option>
+        </optgroup>
+        <optgroup label="Mombasa">
+          <option value="Mombasa, Nyali">Nyali</option>
+          <option value="Mombasa, Likoni">Likoni</option>
+          <option value="Mombasa, Bamburi">Bamburi</option>
+        </optgroup>
+        <optgroup label="Kilifi">
+          <option value="Kilifi, Malindi">Malindi</option>
+          <option value="Kilifi, Watamu">Watamu</option>
+          <option value="Kilifi, Vipingo">Vipingo</option>
+        </optgroup>
+        <optgroup label="Nairobi">
+          <option value="Nairobi, Westlands">Westlands</option>
+          <option value="Nairobi, Karen">Karen</option>
+          <option value="Nairobi, Runda">Runda</option>
+        </optgroup>
+        <optgroup label="Nakuru">
+          <option value="Nakuru, Naivasha">Naivasha</option>
+          <option value="Nakuru, Gilgil">Gilgil</option>
+          <option value="Nakuru, Elementaita">Elementaita</option>
+        </optgroup>
+        <optgroup label="Kajiado">
+          <option value="Kajiado, Ngong">Ngong</option>
+          <option value="Kajiado, Kiserian">Kiserian</option>
+          <option value="Kajiado, Kitengela">Kitengela</option>
+        </optgroup>
+      </select>
+      <label for="checkin">Check-In:</label>
+      <input type="date" id="checkin" required>
+      <label for="checkout">Check-Out:</label>
+      <input type="date" id="checkout" required>
+      <button type="submit">Add Booking</button>
+    </form>
+  </div>
+  <div id="calendar"></div>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
